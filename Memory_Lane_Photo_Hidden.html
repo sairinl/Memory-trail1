@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Memory Lane</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111a33; --text:#eaf0ff; --muted:#b8c3ff;
+      --accent:#ff4fd8; --accent2:#35d0ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(255,79,216,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 20%, rgba(53,208,255,.16), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:960px;margin:0 auto;padding:18px}
+    .brand{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:10px 0 14px}
+    .brand h1{font-size:20px;margin:0;letter-spacing:.3px}
+    .pill{font-size:12px;padding:6px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;color:var(--muted)}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:16px; padding:14px; box-shadow:0 12px 30px rgba(0,0,0,.25);
+    }
+    .grid{display:grid;gap:12px}
+    @media (min-width: 860px){ .grid.two{grid-template-columns: 1.1fr .9fr} }
+    label{font-size:12px;color:var(--muted);display:block;margin:10px 0 6px}
+    input, textarea, select{
+      width:100%; padding:10px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18); color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:90px; resize:vertical}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button{
+      border:0; border-radius:12px; padding:10px 12px; font-weight:700;
+      color:var(--bg); background:linear-gradient(90deg, var(--accent), var(--accent2));
+      cursor:pointer;
+    }
+    button.secondary{
+      background:transparent; color:var(--text);
+      border:1px solid rgba(255,255,255,.18);
+      font-weight:650;
+    }
+    .small{font-size:12px;color:var(--muted)}
+    .timeline{display:grid;gap:10px;margin-top:10px}
+    .moment{
+      padding:12px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      position:relative;
+      overflow:hidden;
+    }
+    .moment:before{
+      content:""; position:absolute; inset:-2px;
+      background: radial-gradient(220px 120px at 20% 0%, rgba(255,79,216,.22), transparent 60%);
+      opacity:.9; pointer-events:none;
+    }
+    .moment h3{margin:0 0 6px;font-size:15px;position:relative}
+    .moment .date{font-size:12px;color:var(--muted);position:relative}
+    .moment p{margin:8px 0 0;line-height:1.45;position:relative}
+    .photo{
+      width:100%;
+      border-radius:12px;
+      margin-top:10px;
+      border:1px solid rgba(255,255,255,.14);
+      display:block;
+      max-height:320px;
+      object-fit:cover;
+      position:relative;
+    }
+    .topnote{margin-top:10px;line-height:1.55;color:var(--text)}
+    .secret{
+      margin-top:12px; padding:12px; border-radius:14px;
+      border:1px dashed rgba(255,255,255,.22); color:var(--muted);
+      background: rgba(0,0,0,.12);
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
+    }
+    .secret strong{color:var(--text)}
+    .hide{display:none}
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
+    .footer{margin:18px 0 6px;text-align:center;color:rgba(255,255,255,.55);font-size:12px}
+    .copybox{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px; padding:10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      overflow:auto;
+      white-space:nowrap;
+    }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color:rgba(255,255,255,.65);
+    }
+    .progress{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      overflow:hidden;
+      margin-top:10px;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1 id="pageTitle">Memory Lane</h1>
+    <div class="pill" id="badge">Custom couple link</div>
+  </div>
+
+  <div class="grid two">
+    <div class="card" id="setupCard">
+      <h2 style="margin:0 0 6px;font-size:16px">Make yours</h2>
+      <div class="small">Fill this once, generate a link, then send it.</div>
+
+      <label>Title (e.g., “Our Memory Lane”)</label>
+      <input id="f_title" placeholder="Our Memory Lane"/>
+
+      <label>Names (optional)</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <input id="f_name1" placeholder="Name 1"/>
+        <input id="f_name2" placeholder="Name 2"/>
+      </div>
+
+      <label>Short message at the top</label>
+      <textarea id="f_note" placeholder="A short note that sets the tone…"></textarea>
+
+      <label>Theme color</label>
+      <select id="f_theme">
+        <option value="pinkblue">Pink + Blue</option>
+        <option value="goldmint">Gold + Mint</option>
+        <option value="purplecyan">Purple + Cyan</option>
+        <option value="sunset">Sunset</option>
+      </select>
+
+      <div class="divider"></div>
+      <h3 style="margin:0 0 6px;font-size:14px">Moments (with photos)</h3>
+      <div class="small">Each moment can have a photo URL (optional). Use a direct image link (ends with .jpg/.png) or a public “raw” link.</div>
+
+      <div id="momentsForm"></div>
+
+      <div class="divider"></div>
+      <label>Hidden message (reveals only after you press & hold for 2 seconds)</label>
+      <input id="f_hidden" placeholder="This only shows after a long-press…"/>
+
+      <label>Secret line (reveals after a simple tap)</label>
+      <input id="f_secret" placeholder="Tap to reveal…"/>
+
+      <div class="btns">
+        <button id="btnGenerate">Generate link</button>
+        <button class="secondary" id="btnSave">Save on this phone</button>
+        <button class="secondary" id="btnReset">Reset</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="small">Share link:</div>
+      <div class="copybox" id="shareLink">—</div>
+      <div class="btns">
+        <button class="secondary" id="btnCopy">Copy link</button>
+      </div>
+      <div class="small" style="margin-top:8px">
+        WhatsApp tip: paste the link text directly into chat (don’t attach the file).
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 6px;font-size:16px">Preview</h2>
+      <div class="small">This is what the other person will see.</div>
+
+      <div class="topnote" id="topNote"></div>
+      <div class="timeline" id="timeline"></div>
+
+      <div class="secret" id="hiddenBox">
+        Press & hold here to reveal a hidden message.
+        <div class="progress" aria-hidden="true"><div class="bar" id="holdBar"></div></div>
+        <div class="hint">Hold for 2 seconds.</div>
+      </div>
+
+      <div class="secret" id="secretBox">Tap here to reveal something small.</div>
+
+      <div class="footer">Made to be simple, private, and shareable.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function encodeData(obj){
+    const json = JSON.stringify(obj);
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function decodeData(str){
+    try{
+      const b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+      const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+      const json = decodeURIComponent(escape(atob(b64 + pad)));
+      return JSON.parse(json);
+    }catch(e){ return null; }
+  }
+  function setTheme(theme){
+    const themes = {
+      pinkblue: ["#ff4fd8","#35d0ff"],
+      goldmint: ["#ffd166","#06d6a0"],
+      purplecyan:["#9b5cff","#00e5ff"],
+      sunset:   ["#ff6b6b","#ffd93d"]
+    };
+    const [a,b] = themes[theme] || themes.pinkblue;
+    document.documentElement.style.setProperty('--accent', a);
+    document.documentElement.style.setProperty('--accent2', b);
+  }
+  function el(id){ return document.getElementById(id); }
+
+  const momentsForm = el("momentsForm");
+  const MOMENT_COUNT = 6;
+  const momentInputs = [];
+  for(let i=0;i<MOMENT_COUNT;i++){
+    const block = document.createElement("div");
+    block.style.marginTop = "12px";
+    block.style.padding = "10px";
+    block.style.borderRadius = "14px";
+    block.style.border = "1px solid rgba(255,255,255,.10)";
+    block.style.background = "rgba(0,0,0,.10)";
+    block.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:10px">
+        <input id="m_date_${i}" placeholder="Date (e.g., 06 Nov 2022)">
+        <input id="m_title_${i}" placeholder="Moment title (e.g., “The day we met”)">
+      </div>
+      <div style="margin-top:8px">
+        <textarea id="m_text_${i}" placeholder="What happened (keep it vivid + short)…"></textarea>
+      </div>
+      <div style="margin-top:8px">
+        <input id="m_img_${i}" placeholder="Photo URL (optional)">
+      </div>
+      <div class="small" style="margin-top:6px;opacity:.9">
+        If your photo doesn't show, the link probably isn't public. Try a different image link.
+      </div>
+    `;
+    momentsForm.appendChild(block);
+
+    momentInputs.push({ d:`m_date_${i}`, t:`m_title_${i}`, x:`m_text_${i}`, img:`m_img_${i}` });
+  }
+
+  let secretRevealed = false;
+  let hiddenRevealed = false;
+
+  let holdTimer = null;
+  let holdStart = 0;
+  const HOLD_MS = 2000;
+
+  function startHold(data){
+    if(hiddenRevealed) return;
+    holdStart = Date.now();
+    window.__holdBar.style.width = "0%";
+    holdTimer = setInterval(()=>{
+      const elapsed = Date.now() - holdStart;
+      const pct = Math.min(100, Math.round((elapsed / HOLD_MS) * 100));
+      window.__holdBar.style.width = pct + "%";
+      if(elapsed >= HOLD_MS){
+        stopHold(true, data);
+      }
+    }, 25);
+  }
+
+  function stopHold(reveal, data){
+    if(holdTimer){ clearInterval(holdTimer); holdTimer = null; }
+    if(reveal && !hiddenRevealed){
+      hiddenRevealed = true;
+      el("hiddenBox").innerHTML = `<strong>Hidden message:</strong> ${data.hidden || "You didn’t add a hidden message."}`;
+      return;
+    }
+    if(!hiddenRevealed && window.__holdBar){
+      window.__holdBar.style.width = "0%";
+    }
+  }
+
+  function render(data){
+    setTheme(data.theme || "pinkblue");
+
+    const names = [data.name1, data.name2].filter(Boolean).join(" & ");
+    el("pageTitle").textContent = data.title || "Memory Lane";
+    el("badge").textContent = names ? names : "Custom couple link";
+
+    el("topNote").textContent = data.note || "";
+
+    const tl = el("timeline");
+    tl.innerHTML = "";
+    (data.moments || []).forEach(m=>{
+      const div = document.createElement("div");
+      div.className = "moment";
+
+      const safeText = (m.text || "").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+      const safeTitle = (m.title || "").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      const safeDate = (m.date || "").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+      div.innerHTML = `
+        <div class="date">${safeDate}</div>
+        <h3>${safeTitle}</h3>
+        <p>${safeText}</p>
+      `;
+
+      if(m.img){
+        const img = document.createElement("img");
+        img.className = "photo";
+        img.loading = "lazy";
+        img.alt = m.title ? `Photo for ${m.title}` : "Moment photo";
+        img.src = m.img;
+        img.onerror = () => {
+          img.remove();
+          const warn = document.createElement("div");
+          warn.className = "small";
+          warn.style.marginTop = "10px";
+          warn.textContent = "Photo couldn't load (link may be private or blocked).";
+          div.appendChild(warn);
+        };
+        div.appendChild(img);
+      }
+
+      tl.appendChild(div);
+    });
+
+    secretRevealed = false;
+    const sb = el("secretBox");
+    sb.innerHTML = "Tap here to reveal something small.";
+    sb.onclick = () => {
+      if(secretRevealed) return;
+      secretRevealed = true;
+      sb.innerHTML = `<strong>Secret:</strong> ${data.secret || "You didn’t add a secret line."}`;
+    };
+
+    hiddenRevealed = false;
+    const hb = el("hiddenBox");
+    hb.innerHTML = `
+      Press & hold here to reveal a hidden message.
+      <div class="progress" aria-hidden="true"><div class="bar" id="holdBar"></div></div>
+      <div class="hint">Hold for 2 seconds.</div>
+    `;
+    window.__holdBar = hb.querySelector(".bar");
+    window.__holdBar.style.width = "0%";
+
+    // touch + mouse
+    hb.addEventListener("touchstart", (e)=>{ e.preventDefault(); startHold(data); }, {passive:false});
+    hb.addEventListener("touchend", ()=> stopHold(false, data));
+    hb.addEventListener("touchcancel", ()=> stopHold(false, data));
+    hb.addEventListener("mousedown", ()=> startHold(data));
+    hb.addEventListener("mouseup", ()=> stopHold(false, data));
+    hb.addEventListener("mouseleave", ()=> stopHold(false, data));
+  }
+
+  function readForm(){
+    const data = {
+      title: el("f_title").value.trim() || "Memory Lane",
+      name1: el("f_name1").value.trim(),
+      name2: el("f_name2").value.trim(),
+      note: el("f_note").value.trim(),
+      theme: el("f_theme").value,
+      hidden: el("f_hidden").value.trim(),
+      secret: el("f_secret").value.trim(),
+      moments: []
+    };
+    for(const mi of momentInputs){
+      const date = el(mi.d).value.trim();
+      const title = el(mi.t).value.trim();
+      const text = el(mi.x).value.trim();
+      const img = el(mi.img).value.trim();
+      if(date || title || text || img){
+        data.moments.push({date, title, text, img});
+      }
+    }
+    return data;
+  }
+
+  function makeShareLink(data){
+    const encoded = encodeData(data);
+    const base = window.location.origin + window.location.pathname;
+    return `${base}?m=${encoded}`;
+  }
+
+  el("btnGenerate").addEventListener("click", ()=>{
+    const data = readForm();
+    render(data);
+    el("shareLink").textContent = makeShareLink(data);
+  });
+
+  el("btnCopy").addEventListener("click", async ()=>{
+    const txt = el("shareLink").textContent;
+    if(!txt || txt === "—") return;
+    try{
+      await navigator.clipboard.writeText(txt);
+      el("btnCopy").textContent = "Copied!";
+      setTimeout(()=> el("btnCopy").textContent = "Copy link", 1200);
+    }catch(e){
+      alert("Copy failed. Long-press the link and copy it manually.");
+    }
+  });
+
+  el("btnSave").addEventListener("click", ()=>{
+    const data = readForm();
+    localStorage.setItem("memoryLaneData", JSON.stringify(data));
+    render(data);
+    el("shareLink").textContent = makeShareLink(data);
+    el("btnSave").textContent = "Saved!";
+    setTimeout(()=> el("btnSave").textContent = "Save on this phone", 1200);
+  });
+
+  el("btnReset").addEventListener("click", ()=>{
+    localStorage.removeItem("memoryLaneData");
+    window.location.href = window.location.pathname;
+  });
+
+  (function init(){
+    const params = new URLSearchParams(window.location.search);
+    const m = params.get("m");
+    if(m){
+      const data = decodeData(m);
+      if(data){
+        el("setupCard").classList.add("hide");
+        render(data);
+        return;
+      }
+    }
+    const saved = localStorage.getItem("memoryLaneData");
+    if(saved){
+      try{
+        const data = JSON.parse(saved);
+        el("f_title").value = data.title || "";
+        el("f_name1").value = data.name1 || "";
+        el("f_name2").value = data.name2 || "";
+        el("f_note").value = data.note || "";
+        el("f_theme").value = data.theme || "pinkblue";
+        el("f_hidden").value = data.hidden || "";
+        el("f_secret").value = data.secret || "";
+        (data.moments || []).forEach((mm,i)=>{
+          if(i >= momentInputs.length) return;
+          el(momentInputs[i].d).value = mm.date || "";
+          el(momentInputs[i].t).value = mm.title || "";
+          el(momentInputs[i].x).value = mm.text || "";
+          el(momentInputs[i].img).value = mm.img || "";
+        });
+        render(data);
+        el("shareLink").textContent = makeShareLink(data);
+        return;
+      }catch(e){}
+    }
+    render({title:"Memory Lane", theme:"pinkblue", moments:[], hidden:"", secret:""});
+  })();
+</script>
+</body>
+</html>
